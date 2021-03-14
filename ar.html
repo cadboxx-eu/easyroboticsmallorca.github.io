@@ -1,0 +1,185 @@
+<!-- include A-Frame obviously -->
+<script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
+<!-- include ar.js for A-Frame -->
+<script src="js/aframe-ar.js"></script>
+<script src="js/loaders/STLLoader.js"></script>
+<script src="js/controls/DragControls.js"></script>
+<body style='margin : 0px; overflow: hidden;'>
+	<script>
+  		//console.log(document.querySelector('a-scene').object3D);
+
+  		AFRAME.registerComponent('hello-world', {
+  		init: function () {
+  		var easyBot = new THREE.Group();
+    	var scene = this.el.sceneEl.object3D;  // THREE.Scene
+    	var renderer;
+    	var dragControls;
+    	this.el.sceneEl.addEventListener('render-target-loaded', function () {
+   // sceneEl.renderer is now set.  
+   			renderer = document.querySelector('a-scene').renderer;
+   			console.log("render is loaded");
+   			console.log(renderer);
+   			dragcontrols = new THREE.DragControls( easyBot.children, document.querySelector("[camera]").getObject3D('camera'),renderer.domElement);
+   			console.log(dragcontrols);
+   			
+   			
+   			
+ 		});
+    	
+    	// ASCII file
+				var loader = new THREE.STLLoader();
+    			// ASCII file
+				var loader = new THREE.STLLoader();
+				
+				loader.load( './stl/ESv2_base.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0x333333, specular: 0x111111, shininess: 200 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( 0, 0, 0);
+					mesh.rotation.set( -Math.PI/2, 0, -Math.PI/2 );
+					mesh.scale.set( 0.1, 0.1, 0.1);
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					mesh.name = "base";
+				    mesh.userData =  {
+						startPos: new THREE.Vector3(mesh.position.x,mesh.position.y,mesh.position.z)
+					}
+					
+					easyBot.add( mesh );
+				} );
+				
+				loader.load( './stl/ESv2_pala.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0xff5553, specular: 0x111111, shininess: 200 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( 0, 0, 0);
+					mesh.rotation.set( -Math.PI/2, 0, -Math.PI/2 );
+					mesh.scale.set( 0.1, 0.1, 0.1);
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					mesh.name = "pala";
+					mesh.userData =  {
+						startPos: new THREE.Vector3(mesh.position.x,mesh.position.y,mesh.position.z)
+					}
+					
+					easyBot.add( mesh );
+				} );
+				
+				loader.load( './stl/ESv2_mid.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0xff8833, specular: 0x111111, shininess: 200 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( 0, 0.02, 0);
+					mesh.rotation.set( -Math.PI/2, 0, -Math.PI/2 );
+					mesh.scale.set( 0.1, 0.1, 0.1);
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					mesh.name = "mid";
+					mesh.userData =  {
+						startPos: new THREE.Vector3(mesh.position.x,mesh.position.y,mesh.position.z)
+					}
+					easyBot.add( mesh );
+				} );
+			
+				loader.load( './stl/ESv2_tapa.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0xff8833, specular: 0x111111, shininess: 200 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( 0, 0.02, 0);
+					mesh.rotation.set( -Math.PI/2, 0, -Math.PI/2 );
+					mesh.scale.set( 0.1, 0.1, 0.1);
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					mesh.name = "tapa";
+					mesh.userData =  {
+						startPos: new THREE.Vector3(mesh.position.x,mesh.position.y,mesh.position.z)
+					}
+					easyBot.add( mesh );
+				} );
+				
+				loader.load( './stl/ESv2_roda.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0x444488, specular: 0x111111, shininess: 200 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( -0.16, 0, -0.52);
+					mesh.rotation.set( -Math.PI/2, 0, -Math.PI/2 );
+					mesh.scale.set( 0.1, 0.1, 0.1);
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					mesh.name = "roda1";
+					mesh.userData =  {
+						startPos: new THREE.Vector3(mesh.position.x,mesh.position.y,mesh.position.z)
+					}
+					easyBot.add( mesh );
+				} );
+				
+				loader.load( './stl/ESv2_roda.stl', function ( geometry ) {
+					var material = new THREE.MeshPhongMaterial( { color: 0x444488, specular: 0x111111, shininess: 200 } );
+					var mesh = new THREE.Mesh( geometry, material );
+					mesh.position.set( -0.16, 0, 0.52);
+					mesh.rotation.set( -Math.PI/2, 0, Math.PI/2 );
+					mesh.scale.set( 0.1, 0.1, 0.1);
+					mesh.castShadow = true;
+					mesh.receiveShadow = true;
+					mesh.name = "roda2";
+					mesh.userData =  {
+						startPos: new THREE.Vector3(mesh.position.x,mesh.position.y,mesh.position.z)
+					}
+					easyBot.add( mesh );
+				} );
+				
+				
+				scene.add(easyBot);
+
+
+		},
+		tick: function () {
+			var scene = this.el.sceneEl.object3D;  // THREE.Scene
+			for(var i = 0;i<scene.children[1].children.length;i++){
+    	    console.log(scene.children[1].children[i].name);
+    	    	var p = scene.children[1].getObjectByName(scene.children[1].children[i].name);
+				
+						
+							if(p.position.y <= p.userData.startPos.y){
+							   p.position.y = p.userData.startPos.y;
+					        }
+
+					        if(p.name==="tapa" || p.name ==="mid" || p.name === "base"){
+					        	p.position.x = p.userData.startPos.x;
+                            	p.position.z = p.userData.startPos.z;
+                        	}
+                        	else if(p.name==="pala"){
+                        		if(p.position.x <= p.userData.startPos.x){
+                        			p.position.x = p.userData.startPos.x;
+                        		}
+					        	p.position.y = p.userData.startPos.y;
+                            	p.position.z = p.userData.startPos.z;
+                        	}
+                        	else if(p.name==="base"){
+					        	p.position.x = p.userData.startPos.x;
+                            	p.position.z = p.userData.startPos.z;
+                        	}
+                        	else if(p.name==="roda1"){
+                        		if(p.position.z >= p.userData.startPos.z){
+                        			p.position.z = p.userData.startPos.z;
+                        		}
+					        	p.position.x = p.userData.startPos.x;
+                            	p.position.y = p.userData.startPos.y;
+                        	}
+                        	else if(p.name==="roda2"){
+                        		if(p.position.z <= p.userData.startPos.z){
+                        			p.position.z = p.userData.startPos.z;
+                        		}
+					        	p.position.x = p.userData.startPos.x;
+                            	p.position.y = p.userData.startPos.y;
+                        	}
+    	    }
+  		}
+		
+	}); 
+  		
+  	</script>
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+    <!-- define a camera which will move according to the marker position -->
+ 
+    <!--<a-marker-camera preset='hiro'></a-marker-camera>-->
+    <a-marker-camera  preset = 'custom' type='pattern' url='logo.patt'>
+    <a-entity hello-world></a-entity></a-marker-camera>
+  </a-scene>
+
+</body>
