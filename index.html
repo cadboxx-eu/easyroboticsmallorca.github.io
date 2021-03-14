@@ -1,1 +1,384 @@
-<h1>hello<h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>three.js webgl - STL</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #000000;
+			margin: 0px;
+			overflow: hidden;
+		}
+
+		#info {
+			color: #fff;
+			position: absolute;
+			top: 10px;
+			width: 100%;
+			text-align: center;
+			z-index: 100;
+			display: block;
+		}
+
+		a {
+			color: skyblue
+		}
+
+		.button {
+			background: #999;
+			color: #eee;
+			padding: 0.2em 0.5em;
+			cursor: pointer
+		}
+
+		.highlight {
+			background: orange;
+			color: #fff;
+		}
+
+		span {
+			display: inline-block;
+			width: 60px;
+			float: left;
+			text-align: center;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="info">
+		<a href="http://easyrobotics.es">easyrobotics.es</a> -
+		EasyBot-v2 stl viewer test page.Designed by toniuep.<a href="http://toniuep.com">toniuep.com</a>
+	</div>
+	<script src="three.min.js"></script>
+	<script src="js/controls/OrbitControls.js"></script>
+	<!--<script src="js/Detector.js"></script>-->
+	<script src="js/libs/stats.min.js"></script>
+	<script src="dat.gui.js"></script>
+
+	<script src="js/loaders/STLLoader.js"></script>
+	<script src="js/controls/DragControls.js"></script>
+
+
+	<script>
+		//if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+		var container, stats;
+		var camera, cameraTarget, scene, renderer;
+		var raycaster;
+		var mouse = new THREE.Vector2(),
+			INTERSECTED;
+		var easyBot = new THREE.Group();
+
+		init();
+		animate();
+
+
+		function init() {
+			container = document.createElement('div');
+			document.body.appendChild(container);
+
+
+			camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 15);
+			camera.position.set(3, 1, 3);
+			cameraTarget = new THREE.Vector3(0, 0.35, 0);
+
+			scene = new THREE.Scene();
+			scene.background = new THREE.Color(0x72645b);
+			scene.fog = new THREE.Fog(0x72645b, 2, 15);
+			// Ground
+			//scene.add( new THREE.GridHelper( 20, 20 ) );
+			var plane = new THREE.Mesh(
+				new THREE.PlaneBufferGeometry(40, 40),
+				new THREE.MeshPhongMaterial({
+					color: 0x999999,
+					specular: 0x101010
+				})
+			);
+			plane.rotation.x = -Math.PI / 2;
+			plane.position.y = -0.5;
+			plane.name = "terra";
+			scene.add(plane);
+			plane.receiveShadow = true;
+
+
+
+
+			//
+			// ASCII file
+			var loader = new THREE.STLLoader();
+
+			loader.load('./stl/ESv2_base.stl', function(geometry) {
+				var material = new THREE.MeshPhongMaterial({
+					color: 0x333333,
+					specular: 0x111111,
+					shininess: 200
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(0, 0, 0);
+				mesh.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = "base";
+				mesh.userData = {
+					startPos: new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z)
+				}
+
+				easyBot.add(mesh);
+			});
+
+			loader.load('./stl/ESv2_pala.stl', function(geometry) {
+				var material = new THREE.MeshPhongMaterial({
+					color: 0xff5553,
+					specular: 0x111111,
+					shininess: 200
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(0, 0, 0);
+				mesh.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = "pala";
+				mesh.userData = {
+					startPos: new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z)
+				}
+
+				easyBot.add(mesh);
+			});
+
+			loader.load('./stl/ESv2_mid.stl', function(geometry) {
+				var material = new THREE.MeshPhongMaterial({
+					color: 0xff8833,
+					specular: 0x111111,
+					shininess: 200
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(0, 0.02, 0);
+				mesh.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = "mid";
+				mesh.userData = {
+					startPos: new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z)
+				}
+				easyBot.add(mesh);
+			});
+
+			loader.load('./stl/ESv2_tapa.stl', function(geometry) {
+				var material = new THREE.MeshPhongMaterial({
+					color: 0xff8833,
+					specular: 0x111111,
+					shininess: 200
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(0, 0, 0);
+				mesh.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = "tapa";
+				mesh.userData = {
+					startPos: new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z)
+				}
+				easyBot.add(mesh);
+			});
+
+			loader.load('./stl/ESv2_roda.stl', function(geometry) {
+				var material = new THREE.MeshPhongMaterial({
+					color: 0x444488,
+					specular: 0x111111,
+					shininess: 200
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(-0.16, 0, -0.52);
+				mesh.rotation.set(-Math.PI / 2, 0, -Math.PI / 2);
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = "roda1";
+				mesh.userData = {
+					startPos: new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z)
+				}
+				easyBot.add(mesh);
+			});
+
+			loader.load('./stl/ESv2_roda.stl', function(geometry) {
+				var material = new THREE.MeshPhongMaterial({
+					color: 0x444488,
+					specular: 0x111111,
+					shininess: 200
+				});
+				var mesh = new THREE.Mesh(geometry, material);
+				mesh.position.set(-0.16, 0, 0.52);
+				mesh.rotation.set(-Math.PI / 2, 0, Math.PI / 2);
+				mesh.scale.set(0.1, 0.1, 0.1);
+				mesh.castShadow = true;
+				mesh.receiveShadow = true;
+				mesh.name = "roda2";
+				mesh.userData = {
+					startPos: new THREE.Vector3(mesh.position.x, mesh.position.y, mesh.position.z)
+				}
+				easyBot.add(mesh);
+			});
+
+			scene.add(easyBot);
+			// Lights
+			scene.add(new THREE.HemisphereLight(0x443333, 0x111122));
+			addShadowedLight(1, 1, 1, 0xffffff, 1.35);
+			addShadowedLight(0.5, 1, -1, 0xffffdd, 1);
+			// renderer
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.gammaInput = true;
+			renderer.gammaOutput = true;
+			renderer.shadowMap.enabled = true;
+			container.appendChild(renderer.domElement);
+
+			//Raycaster...
+			//
+			raycaster = new THREE.Raycaster();
+			// stats
+			//stats = new Stats();
+			//container.appendChild( stats.dom );
+			//
+			// controls
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls.autoRotate = true;
+			controls.enableZoom = true;
+
+			var dragControls = new THREE.DragControls(easyBot.children, camera, renderer.domElement);
+			dragControls.addEventListener('dragstart', function(event) {
+				controls.enabled = false;
+
+
+			});
+			dragControls.addEventListener('dragend', function(event) {
+				controls.enabled = true;
+				/*var p = easyBot.getObjectByName(event.object.name);
+				 p.position.x = p.userData.startPos.x;
+				 p.position.y = p.userData.startPos.y;
+                 p.position.z = p.userData.startPos.z;
+				 console.log(p.userData);
+				 */
+			});
+			document.addEventListener('click', onDocumentMouseDown, false);
+			document.addEventListener('touchstart', onDocumentTouchStart, false);
+			dragControls.addEventListener('drag', function(event) {
+				var p = easyBot.getObjectByName(event.object.name);
+
+
+				if (p.position.y <= p.userData.startPos.y) {
+					p.position.y = p.userData.startPos.y;
+				}
+
+				if (p.name === "tapa" || p.name === "mid" || p.name === "base") {
+					p.position.x = p.userData.startPos.x;
+					p.position.z = p.userData.startPos.z;
+				} else if (p.name === "pala") {
+					if (p.position.x <= p.userData.startPos.x) {
+						p.position.x = p.userData.startPos.x;
+					}
+					p.position.y = p.userData.startPos.y;
+					p.position.z = p.userData.startPos.z;
+				} else if (p.name === "base") {
+					p.position.x = p.userData.startPos.x;
+					p.position.z = p.userData.startPos.z;
+				} else if (p.name === "roda1") {
+					if (p.position.z >= p.userData.startPos.z) {
+						p.position.z = p.userData.startPos.z;
+					}
+					p.position.x = p.userData.startPos.x;
+					p.position.y = p.userData.startPos.y;
+				} else if (p.name === "roda2") {
+					if (p.position.z <= p.userData.startPos.z) {
+						p.position.z = p.userData.startPos.z;
+					}
+					p.position.x = p.userData.startPos.x;
+					p.position.y = p.userData.startPos.y;
+				}
+				//console.log(event);
+			})
+			//
+			window.addEventListener('resize', onWindowResize, false);
+		}
+
+		function onDocumentTouchStart(event) {
+			event.preventDefault();
+			event.clientX = event.touches[0].clientX;
+			event.clientY = event.touches[0].clientY;
+			onDocumentMouseDown(event);
+		}
+
+		function onDocumentMouseDown(event) {
+			event.preventDefault();
+			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			//console.log(mouse);
+
+			raycaster.setFromCamera(mouse, camera);
+			var intersects = raycaster.intersectObjects(easyBot.children);
+			if (intersects.length > 0) {
+				if (INTERSECTED != intersects[0].object) {
+					if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+					INTERSECTED = intersects[0].object;
+					INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+					INTERSECTED.material.emissive.setHex(0xff0000);
+				}
+			} else {
+				if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+				INTERSECTED = null;
+			}
+
+		}
+
+		function addShadowedLight(x, y, z, color, intensity) {
+			var directionalLight = new THREE.DirectionalLight(color, intensity);
+			directionalLight.position.set(x, y, z);
+			scene.add(directionalLight);
+			directionalLight.castShadow = true;
+			var d = 1;
+			directionalLight.shadow.camera.left = -d;
+			directionalLight.shadow.camera.right = d;
+			directionalLight.shadow.camera.top = d;
+			directionalLight.shadow.camera.bottom = -d;
+			directionalLight.shadow.camera.near = 1;
+			directionalLight.shadow.camera.far = 4;
+			directionalLight.shadow.mapSize.width = 1024;
+			directionalLight.shadow.mapSize.height = 1024;
+			directionalLight.shadow.bias = -0.002;
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+
+		function animate() {
+			requestAnimationFrame(animate);
+			render();
+			//stats.update();
+		}
+
+		function render() {
+			controls.update();
+			//var timer = Date.now() * 0.0005;
+			//camera.position.x = Math.cos( timer ) * 3;
+			//camera.position.z = Math.sin( timer ) * 3;
+			camera.lookAt(cameraTarget);
+
+			//camera.lookAt( scene.position );
+			renderer.render(scene, camera);
+		}
+	</script>
+</body>
+
+</html>
